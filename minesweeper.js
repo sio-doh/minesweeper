@@ -76,6 +76,29 @@ export function revealTile(board, tile) {
     }
 }
 
+export function checkWin(board) { 
+    // every single tile revealed is a number or hidden or flag marked 
+    return board.every(row => {
+        return row.every(tile => {
+            return (
+                tile.status === TILE_STATUSES.NUMBER || 
+                (tile.mine && 
+                    (tile.status === TILE_STATUSES.HIDDEN || 
+                        tile.status === TILE_STATUSES.MARKED))
+            )
+        })
+    })
+}
+
+export function checkLose(board) { 
+    // if here is a mine, reveal it and you lose
+    return board.some(row => {
+        return row.some(tile => {
+            return tile.status === TILE_STATUSES.MINE 
+        })
+    })
+}
+
 function getMinePositions(boardSize, numberOfMines) {
     const positions = []
     
@@ -101,7 +124,7 @@ function randomNumber(size) {
     return Math.floor(Math.random() * size)
 } 
 
-function nearbyTiles() {
+function nearbyTiles(board, {x, y}) {
     const tiles = [] 
 
     for (let xOffset = -1; xOffset <= 1; xOffset++) {
